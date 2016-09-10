@@ -1,0 +1,80 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf460
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid1\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid101\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid201\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid301\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid401\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid5}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww13760\viewh19580\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\b\fs28 \cf0 INSTRUCTIONS TO RUN FLOWLOGO
+\b0\fs24 \
+\
+To simplify the testing/development process, I have cleaned up the interface and only left the stuff that we need to run some simple groundwater simulations.\
+\
+
+\b The process to run a model is as follows:\
+
+\b0 \
+\pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	1.	}Open the FlowLogo file in NetLogo\
+{\listtext	2.	}Press \'911-SETUP\'92 button on the interface \'97 this creates and initialises all the groundwater equations that need to be solved \
+{\listtext	3.	}Press \'912-INITIAL HEADS\'92 \'97 this solves the groundwater equations in steady states to provide a set of initial conditions for the transient simulation\
+{\listtext	4.	}Press \'913-RUN\'94 \'97 this runs the model. You will notice how the button remains pressed, and the tick counter at the top left of the window is counting. While the run button is pressed, the simulation is running and you can interact with the model in several ways. I have set up the interface with parameters that will make testing straightforward. The numbers that appear on the model grid are groundwater elevations\
+{\listtext	5.	}While the run button is pressed, you can add pumping wells which essentially take groundwater from the aquifer (this will be the water source for agents in the model). You can do this by pressing the \'91place pumping well\'92 button and clicking on the model. The same applies for adding injection wells (introduce water to the aquifer), in this case by pressing \'91place injection well\'92 (agents may store water during winter). Make sure only one button is pressed at a time. When adding wells, you will see the effect on groundwater elevations, these will locally fall/rise depending if you add a pumping/injection well.\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+Steps 1-5 will work OK for models of up to 30x30 cells (N,M parameters on the interface). The problem is that FlowLogo will start to run very slow when we increase N=M to about 40-50. Above 50 Java hits heap space errors. You can try this by setting N=M=50,60,etc and repeating steps 1-5.\
+\
+
+\b The issue lies in the following:\
+
+\b0 \
+\pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
+\ls2\ilvl0\cf0 {\listtext	1.	}What we are doing here is solving a system of linear equations, Ax=b\
+{\listtext	2.	}FlowLogo assembles the A and b matrices on-the-fly and uses a 
+\b direct solver
+\b0  to calculate the solution, x (i.e., it calculates the inverse of matrix A). I have used NetLogo\'92s \'91matrix\'92 extension for this, which is built on a Java library called \'91JAMA\'92\
+{\listtext	3.	}This approach is inefficient in terms of memory and computation: most of the entries in the A matrix are zeros, and also the matrix is symmetric, positive definite, etc. 
+\b A is a sparse matrix
+\b0 . These are really good properties that make 
+\b iterative solvers 
+\b0 the preferred option. The problem is that NetLogo does not have a way to implement an interactive solution to Ax=b. We need to find a way to do this.\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+
+\b In FlowLogo:\
+
+\b0 \
+A is called A\
+b is called C\
+\
+
+\b Options:\
+
+\b0 \
+\pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
+\ls3\ilvl0\cf0 {\listtext	1.	}Write a NetLogo extension that solves Ax=b using iterative methods, in the CPU using linear algebra packages (BLAS) or in the GPU using readily available CUDA libraries. Instructions on how to write NetLogo extensions are here: \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
+\ls4\ilvl0\cf0 		https://github.com/NetLogo/NetLogo/wiki/Extensions-API\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
+\ls5\ilvl0\cf0 	2. Write A & b to a text file, solve Ax=b outside NetLogo and import the results. I assume this would be inefficient due to I/O requirements\
+\
+	3. Use NetLogo\'92s shell extension to run a script that solves Ax=b using the command line; https://github.com/NetLogo/Shell-Extension/#readme\
+\
+	4. Other?\
+\
+\
+\
+	\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+}
