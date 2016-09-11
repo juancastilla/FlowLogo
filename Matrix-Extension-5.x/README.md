@@ -2,6 +2,10 @@
 
 This package contains the NetLogo matrix extension, which provides support for a new datatype (mathematical "matrix" objects) and associated operations (like matrix multiplication) in NetLogo. 
 
+## Idea
+
+Extend capabilities of the NetLogo Matrix extension to improve performance with sparse matrices. Two options: (1) Parallel Colt using many CPUs; (2) JCusparse using GPGPUs
+
 ## Using
 
 The matrix extension is pre-installed in NetLogo. For instructions on using it in your model, or for more information about NetLogo extensions, see the NetLogo User Manual.
