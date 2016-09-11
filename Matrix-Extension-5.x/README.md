@@ -4,7 +4,10 @@ This package contains the NetLogo matrix extension, which provides support for a
 
 ## **Idea**
 
-Extend capabilities of the NetLogo Matrix extension to improve performance with sparse matrices. Two options: (1) Parallel Colt using many CPUs; (2) JCusparse using GPGPUs
+Extend capabilities of the NetLogo Matrix extension to improve performance with sparse matrices. Two options: 
+
+(1) Parallel Colt using many CPUs
+(2) JCusparse using GPGPUs
 
 ## Using
 
