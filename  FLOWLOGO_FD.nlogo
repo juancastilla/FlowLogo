@@ -2425,23 +2425,6 @@ PCG?
 1
 -1000
 
-BUTTON
-1148
-1442
-1252
-1476
-init Rserve
-rserve:init 6311 \"localhost\"   \nprint rserve:isConnected                                     ;; connect to Rserve to solve flow equations using PCG package in R
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 @#$#@#$#@
 ## WHAT IS IT?
 
