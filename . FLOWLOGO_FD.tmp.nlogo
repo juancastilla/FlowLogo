@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; EXTENSIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-extensions [matrix]
+extensions [matrix Rserv]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VARIABLE DEFINITIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -533,6 +533,8 @@ to setup-world
 
   if PCG? = TRUE
   [
+  rserve:eval "source('/Users/Wombat/Dropbox/accelsolver.R')"      ;; Load R script with pcg solver
+  rserve:put "n" number-of-unknowns                                ;; pass number of unknowns
   ]
 end
 
@@ -728,6 +730,8 @@ to prepare-equations
   if PCG? = FALSE [calculate-inverse-A]
   if PCG? = TRUE
   [
+    rserve:put "A" matrix:to-column-list A                ;; pass A matrix to R — in the CONFINED case we only need to do this ONCE
+    rserve:eval "cholesky_A(A,n)"
   ]
 end
 
@@ -967,6 +971,11 @@ to solve-system-of-equations
   if PCG? = FALSE [set solution-vector matrix:times inverse-A C]
   if PCG? = TRUE
   [
+   rserve:put "b" matrix:to-column-list C                              ;; pass b vector to R
+   rserve:eval "solveSparse(A.chol,b,n)"                               ;; solve using chol/backsolve iteration
+   set solution-vector matrix:from-column-list rserve:get "x"          ;; retrieve solution
+   rserve:put "iteration_n" ticks
+   rserve:eval "print(c('iteration',iteration_n,'complete'))"
   ]
 end
 
