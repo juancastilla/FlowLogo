@@ -1,9 +1,0 @@
-*.jar
-*.pack.gz
-*.iml
-/classes/
-/lib/
-/matrix.zip
-/scalatest*.jar
-/tmp/
-target
