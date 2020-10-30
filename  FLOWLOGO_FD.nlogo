@@ -512,6 +512,13 @@ end
 to setup-model
   ca
   reset-ticks
+  py:setup py:python
+  (py:run
+    "import numpy as np"
+    "import scipy.sparse"
+    "import scipy.sparse.linalg"
+    "from scipy.sparse import csc_matrix"
+  )
   setup-world
   setup-bc
   setup-initial-heads
@@ -530,10 +537,6 @@ to setup-world
   ask patches [set pcolor white]                              ;; set initial colour of patches to white
   ask patches [set well? false set recharge? false]           ;; initially none of the patches have wells or recharge, setup-pumping and setup-recharge modify this tag
   set number-of-unknowns N * M
-
-  if PCG? = TRUE
-  [
-  ]
 end
 
 
@@ -725,10 +728,8 @@ to prepare-equations
   modify-conductances-for-bcs
   build-matrix-A
   remove-inactive-cells-from-A-matrix
-  if PCG? = FALSE [calculate-inverse-A]
-  if PCG? = TRUE
-  [
-  ]
+  if PYTHON-SOLVER? = FALSE [calculate-inverse-A]
+  if PYTHON-SOLVER? = TRUE []
 end
 
 
@@ -964,9 +965,20 @@ end
 
 
 to solve-system-of-equations
-  if PCG? = FALSE [set solution-vector matrix:times inverse-A C]
-  if PCG? = TRUE
+  if PYTHON-SOLVER? = FALSE [set solution-vector matrix:times inverse-A C]
+  if PYTHON-SOLVER? = TRUE
   [
+    py:set "a" matrix:to-row-list A
+    py:set "b" matrix:to-row-list C
+
+    (py:run
+      "A = csc_matrix(a, dtype=float)"
+      "B = csc_matrix(b, dtype=float)"
+      "x = scipy.sparse.linalg.spsolve(A, B)"
+)
+    let my-list [[]]
+    set my-list replace-item 0 my-list py:runresult "x"
+    set solution-vector matrix:from-column-list my-list
   ]
 end
 
@@ -1019,7 +1031,7 @@ to calculate-RIV-term                                                           
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; REMOVE INACTIVE CELLS FROM CALCULATIONS / SPEEDS UP SOLUTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; REMOVE INACTIVE CELLS FROM CALCULATIONS / SPEEDS UP SOLUTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to remove-inactive-cells-from-A-matrix
@@ -1175,13 +1187,13 @@ to write-output-heads
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-171
-58
-771
-659
+95
+32
+827
+765
 -1
 -1
-18.5
+13.9231
 1
 10
 1
@@ -1192,9 +1204,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-31
+51
 0
-31
+51
 0
 0
 1
@@ -1264,7 +1276,7 @@ INPUTBOX
 260
 787
 N
-30.0
+50.0
 1
 0
 Number
@@ -1275,7 +1287,7 @@ INPUTBOX
 348
 787
 M
-30.0
+50.0
 1
 0
 Number
@@ -2415,15 +2427,32 @@ FIXED-FLUX
 1
 
 SWITCH
-1156
-1494
-1259
-1527
-PCG?
-PCG?
-1
+789
+58
+958
+91
+PYTHON-SOLVER?
+PYTHON-SOLVER?
+0
 1
 -1000
+
+BUTTON
+835
+110
+943
+143
+Python tests
+py:set \"a\" matrix:to-row-list A\npy:set \"b\" matrix:to-row-list C\n\n(py:run\n\"A = csc_matrix(a, dtype=float)\"\n\"B = csc_matrix(b, dtype=float)\"\n\"x = scipy.sparse.linalg.spsolve(a, b)\"\n)\n\n\nlet my-list [[]]\n\n\nset my-list replace-item 0 my-list py:runresult \"x\"\n\nshow my-list
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
