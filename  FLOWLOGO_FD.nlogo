@@ -972,9 +972,9 @@ to solve-system-of-equations
     py:set "b" matrix:to-row-list C
 
     (py:run
-      "A = csc_matrix(a, dtype=float)"
-      "B = csc_matrix(b, dtype=float)"
-      "x = scipy.sparse.linalg.spsolve(A, B)"
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.cg(a, b)"
 )
     let my-list [[]]
     set my-list replace-item 0 my-list py:runresult "x"
@@ -1187,13 +1187,13 @@ to write-output-heads
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-95
-32
-827
-765
+39
+44
+791
+797
 -1
 -1
-13.9231
+9.0732
 1
 10
 1
@@ -1204,9 +1204,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-51
+81
 0
-51
+81
 0
 0
 1
@@ -1214,10 +1214,10 @@ ticks
 30.0
 
 BUTTON
-784
-586
-953
-619
+875
+618
+1044
+651
  1- SETUP
 setup-model
 NIL
@@ -1246,10 +1246,10 @@ K
 HORIZONTAL
 
 SLIDER
-1238
-604
-1366
+1329
 637
+1457
+670
 delta-t
 delta-t
 1
@@ -1271,32 +1271,32 @@ HYDRAULIC PARAMETERS
 1
 
 INPUTBOX
-186
-727
-260
-787
+194
+848
+268
+908
 N
-50.0
+80.0
 1
 0
 Number
 
 INPUTBOX
-276
-727
-348
-787
+284
+848
+356
+908
 M
-50.0
+80.0
 1
 0
 Number
 
 INPUTBOX
-103
-770
-153
-830
+112
+890
+162
+950
 delta
 750.0
 1
@@ -1304,60 +1304,60 @@ delta
 Number
 
 TEXTBOX
-1018
-587
-1207
-606
+1109
+619
+1298
+638
 SIMULATION PARAMETERS
 12
 0.0
 1
 
 CHOOSER
-1042
-452
-1134
-497
+1133
+484
+1225
+529
 left-bc
 left-bc
 "no-flow" "fixed-head"
 1
 
 CHOOSER
-1318
-452
-1410
-497
+1409
+484
+1501
+529
 right-bc
 right-bc
 "no-flow" "fixed-head"
 1
 
 CHOOSER
-1226
-452
-1318
-497
+1317
+484
+1409
+529
 top-bc
 top-bc
 "no-flow" "fixed-head"
 0
 
 CHOOSER
-1132
-452
-1228
-497
+1223
+484
+1319
+529
 bottom-bc
 bottom-bc
 "no-flow" "fixed-head"
 0
 
 INPUTBOX
-1226
-498
-1318
-558
+1317
+530
+1409
+590
 top-bc-head
 50.0
 1
@@ -1365,10 +1365,10 @@ top-bc-head
 Number
 
 INPUTBOX
-1042
-498
-1134
-558
+1133
+530
+1225
+590
 left-bc-head
 30.0
 1
@@ -1376,10 +1376,10 @@ left-bc-head
 Number
 
 INPUTBOX
-1318
-498
-1410
-558
+1409
+530
+1501
+590
 right-bc-head
 70.0
 1
@@ -1387,10 +1387,10 @@ right-bc-head
 Number
 
 INPUTBOX
-1132
-498
-1229
-558
+1223
+530
+1320
+590
 bottom-bc-head
 20.0
 1
@@ -1398,10 +1398,10 @@ bottom-bc-head
 Number
 
 MONITOR
-186
-787
-260
-832
+194
+908
+268
+953
 Size X [km]
 (delta * N) / 1000
 17
@@ -1409,10 +1409,10 @@ Size X [km]
 11
 
 MONITOR
-276
-787
-348
-832
+284
+908
+356
+953
 Size Y [km]
 (delta * M) / 1000
 17
@@ -1420,20 +1420,20 @@ Size Y [km]
 11
 
 CHOOSER
-493
-734
-759
-779
+502
+855
+768
+900
 view
 view
 "wells" "K (values)" "K (contours)" "T (values)" "S (values)" "heads (values)" "heads (contours)" "areal recharge" "ET" "DRAIN conductance" "DRAIN flow [m3/d] and head values" "DRAIN flow [L/s] and head values" "RIV flow [m3/d] and head values" "RIV flow [L/s] and head values" "RIV flow [L/s] and drawdowns" "RIV storage and head values" "RIV bottom and head values" "RIV conductance" "patch numbering" "boundary conditions"
 5
 
 BUTTON
-564
-810
-673
-843
+573
+930
+682
+963
 NIL
 reset-view
 NIL
@@ -1447,20 +1447,20 @@ NIL
 1
 
 CHOOSER
-1125
-604
-1237
-649
+1215
+637
+1327
+682
 solver
 solver
 "steady-state" "transient"
 1
 
 INPUTBOX
-1365
-604
-1453
-664
+1455
+637
+1543
+697
 initial-heads
 50.0
 1
@@ -1483,20 +1483,20 @@ aquifer-thickness
 HORIZONTAL
 
 CHOOSER
-1015
-604
-1127
-649
+1105
+637
+1217
+682
 aquifer-type
 aquifer-type
 "confined" "unconfined"
 0
 
 BUTTON
-784
-650
-953
-683
+875
+682
+1044
+715
 3 - RUN
 go
 T
@@ -1521,10 +1521,10 @@ S
 Number
 
 BUTTON
-793
-258
-947
-291
+884
+290
+1038
+323
 place pumping well
 place-pumping-well
 T
@@ -1538,10 +1538,10 @@ NIL
 1
 
 BUTTON
-794
-310
-948
-343
+885
+342
+1039
+375
 place injection well
 place-injection-well
 T
@@ -1585,30 +1585,30 @@ TEXTBOX
 1
 
 TEXTBOX
-212
-692
-362
-710
+220
+813
+370
+831
 MODEL DIMENSIONS
 12
 0.0
 1
 
 TEXTBOX
-222
-712
-313
-730
+230
+833
+321
+851
 Number of cells
 11
 0.0
 1
 
 TEXTBOX
-594
-717
-630
-735
+603
+838
+639
+856
 VIEWS
 12
 0.0
@@ -1626,10 +1626,10 @@ Sy
 Number
 
 BUTTON
-784
-617
-953
-650
+875
+649
+1044
+682
 2- INITIAL HEADS
 initialize-heads
 NIL
@@ -1643,20 +1643,20 @@ NIL
 1
 
 TEXTBOX
-266
-762
-281
-780
+274
+883
+289
+901
 X
 11
 0.0
 1
 
 TEXTBOX
-91
-751
-175
-769
+99
+872
+183
+890
 Size of cells [m]
 11
 0.0
@@ -1736,10 +1736,10 @@ NIL
 1
 
 TEXTBOX
-1278
-588
-1330
-606
+1369
+620
+1421
+638
 timestep
 11
 0.0
@@ -2188,10 +2188,10 @@ Drain conductance units: [m2/day]
 1
 
 BUTTON
-798
-364
-951
+889
 397
+1042
+430
 add drain cell
 set-drain-patch
 T
@@ -2299,10 +2299,10 @@ NIL
 1
 
 BUTTON
-565
-778
-675
-811
+573
+899
+683
+932
 NIL
 refresh-view
 NIL
@@ -2427,10 +2427,10 @@ FIXED-FLUX
 1
 
 SWITCH
-789
-58
-958
-91
+880
+90
+1049
+123
 PYTHON-SOLVER?
 PYTHON-SOLVER?
 0
@@ -2438,12 +2438,12 @@ PYTHON-SOLVER?
 -1000
 
 BUTTON
-835
-110
-943
-143
+925
+142
+1033
+175
 Python tests
-py:set \"a\" matrix:to-row-list A\npy:set \"b\" matrix:to-row-list C\n\n(py:run\n\"A = csc_matrix(a, dtype=float)\"\n\"B = csc_matrix(b, dtype=float)\"\n\"x = scipy.sparse.linalg.spsolve(a, b)\"\n)\n\n\nlet my-list [[]]\n\n\nset my-list replace-item 0 my-list py:runresult \"x\"\n\nshow my-list
+py:set \"A\" matrix:to-row-list A\npy:set \"B\" matrix:to-row-list C\n\npy:run \"x = scipy.sparse.linalg.cg(A,B)\"\n
 NIL
 1
 T
