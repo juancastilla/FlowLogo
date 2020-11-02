@@ -971,11 +971,78 @@ to solve-system-of-equations
     py:set "a" matrix:to-row-list A
     py:set "b" matrix:to-row-list C
 
+    if Method = "Scipy — BIConjugate Gradient (Iterative)"
+    [
     (py:run
       "a = csc_matrix(a, dtype=float)"
       "b = np.array(b, dtype=float)"
-      "x, exitCode = scipy.sparse.linalg.cg(a, b)"
-)
+      "x, exitCode = scipy.sparse.linalg.bicg(a, b)")
+    ]
+
+    if Method = "Scipy — BIConjugate Gradient STABilized (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.bicgstab(a, b)")
+    ]
+
+    if Method = "Scipy — Conjugate Gradient (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.cg(a, b)")
+    ]
+
+    if Method = "Scipy — Generalized Minimal RESidual (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.cgs(a, b)")
+    ]
+
+    if Method = "Scipy — Generalized Minimal RESidual (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.gmres(a, b)")
+    ]
+
+    if Method = "Scipy — LGMRES algorithm (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.lgmres(a, b)")
+    ]
+
+    if Method = "Scipy — MINimum RESidual (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.minres(a, b)")
+    ]
+
+    if Method = "Scipy — Quasi-Minimal Residual (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.qmr(a, b)")
+    ]
+
+    if Method = "Scipy — Flexible GCROT (Iterative)"
+    [
+    (py:run
+      "a = csc_matrix(a, dtype=float)"
+      "b = np.array(b, dtype=float)"
+      "x, exitCode = scipy.sparse.linalg.gcrotmk(a, b)")
+    ]
+
     let my-list [[]]
     set my-list replace-item 0 my-list py:runresult "x"
     set solution-vector matrix:from-column-list my-list
@@ -1187,13 +1254,13 @@ to write-output-heads
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-39
-44
-791
-797
+33
+79
+746
+794
 -1
 -1
-9.0732
+15.344
 1
 10
 1
@@ -1204,9 +1271,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-81
+31
 0
-81
+31
 0
 0
 1
@@ -1214,12 +1281,12 @@ ticks
 30.0
 
 BUTTON
-875
-618
-1044
-651
+877
+617
+1046
+650
  1- SETUP
-setup-model
+setup-model\nif PYTHON-SOLVER? = FALSE [set Method \"NetLogo — Matrix Extension (Direct)\"] 
 NIL
 1
 T
@@ -1276,7 +1343,7 @@ INPUTBOX
 268
 908
 N
-80.0
+30.0
 1
 0
 Number
@@ -1287,7 +1354,7 @@ INPUTBOX
 356
 908
 M
-80.0
+30.0
 1
 0
 Number
@@ -2427,9 +2494,9 @@ FIXED-FLUX
 1
 
 SWITCH
-880
+769
 90
-1049
+938
 123
 PYTHON-SOLVER?
 PYTHON-SOLVER?
@@ -2437,22 +2504,15 @@ PYTHON-SOLVER?
 1
 -1000
 
-BUTTON
-925
-142
-1033
-175
-Python tests
-py:set \"A\" matrix:to-row-list A\npy:set \"B\" matrix:to-row-list C\n\npy:run \"x = scipy.sparse.linalg.cg(A,B)\"\n
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
+CHOOSER
+958
+90
+1317
+136
+Method
+Method
+"NetLogo — Matrix Extension (Direct)" "Scipy — BIConjugate Gradient (Iterative)" "Scipy — BIConjugate Gradient STABilized (Iterative)" "Scipy — Conjugate Gradient (Iterative)" "Scipy — Generalized Minimal RESidual (Iterative)" "Scipy — LGMRES algorithm (Iterative)" "Scipy — MINimum RESidual (Iterative)" "Scipy — Quasi-Minimal Residual (Iterative)" "Scipy — Flexible GCROT (Iterative)"
+7
 
 @#$#@#$#@
 ## WHAT IS IT?
